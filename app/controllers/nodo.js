@@ -38,12 +38,17 @@ router.post('/GetCurrentNodes', function (req, res, next) {
 });
 
 router.post('/GetRangeNodes', function (req, res, next) {
-
-  var dtInitDate = new Date(req.body.dtInitDate),
-    dtFinalDate = new Date(req.body.dtFinalDate)
-  sbZoneId = req.body.zoneId;
    
-  ControlNode.GetRangeNodes(sbZoneId, dtInitDate, dtFinalDate, res)
+  try {
+    var dtInitDate = new Date(req.body.dtInitDate),
+    dtFinalDate = new Date(req.body.dtFinalDate)
+    sbZoneId = req.body.zoneId;  
+
+    ControlNode.GetRangeNodes(sbZoneId, dtInitDate, dtFinalDate, res)
+    ControlNode.GetRangeNodesAvgNotify(sbZoneId, dtInitDate, dtFinalDate)    
+  } catch (error) {
+    console.log(err);    
+  }
 
 });
 
@@ -57,7 +62,7 @@ router.post('/LastAvgNodes', function (req, res, next) {
 
 router.post('/ToDayAvgNodes', function (req, res, next) {
   var sbZoneId = req.body.theme;
-
+  
   ControlNode.ToDayAvgNodes(sbZoneId, res, next)
 
 });

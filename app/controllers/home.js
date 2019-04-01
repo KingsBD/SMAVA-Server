@@ -42,6 +42,7 @@ var nodeMessage = '{"data": {"temperature": 25,"humidity": 90,"soilHumidity": 50
     })
 
     clients[i].on('message', function (topic, message) {
+      console.log('Topico de usuario' + topic);      
       // message is Buffer
       var JsonNode = JSON.parse(message.toString());
 

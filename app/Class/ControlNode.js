@@ -5,8 +5,15 @@
 'use strict'
 var mongoose = require('mongoose'),
   nodo = mongoose.model('Nodo'),
-  theme = mongoose.model('Theme'),
-  User = mongoose.model('User');
+  zone = mongoose.model('Theme'),
+  User = mongoose.model('User'),
+  csbTemperature = 'Temperatura',
+  csbSoilTemperature = 'Temperatura de Suelo',
+  csbHumidity = 'Humedad',
+  csbBrightness = 'Luminosidad',
+  csbSoilHumidity = 'Humedad de Suelo',
+  csbUv = 'Rayos UV',
+  csbVolatileGases = 'Gases Volátiles';
 
 var admin = require('firebase-admin');
 
@@ -128,79 +135,186 @@ module.exports = class ControlNode {
 
   }
 
-  static SendAlert(zoneid, Atemperature, Ahumidity, Abrightness) {
+  static GetRangeNodesAvgNotify(sbZoneId, dtInitialDate, dtFinalDate) {
 
-    theme.findOne({ _id: zoneid }, function (err, searchZone) {
-      if (err) {
-        console.log("Not found Zone");
+    nodo.aggregate(
+      [
+        {
+          $match:
+          {
+            date: { $lte: dtFinalDate, $gte: dtInitialDate }
+          }
+        },
+        {
+          $group:
+          {
+            _id: {
+              zoneId: sbZoneId
+            },
+            nuAvgTemperature: { $avg: '$temperature' },
+            nuAvgSoilTemperature: { $avg: '$soilTemperature' },
+            nuAvgHumidity: { $avg: '$humidity' },
+            nuAvgBrightness: { $avg: '$brightness' },
+            nuAvgSoilHumidity: { $avg: '$soilHumidity' },
+            nuAvgUv: { $avg: '$uv' },
+            nuAvgVolatileGases: { $avg: '$volatileGases' }
+          }
+        }
+      ],
+      function (err, nodes) {
+
+        if (err) {
+          console.log(err);
+          
+        } else {                    
+
+          if (nodes.hasOwnProperty('0')) {
+
+            let nuAvgTemperature = nodes[0].nuAvgTemperature,
+            nuAvgSoilTemperature = nodes[0].nuAvgSoilTemperature,
+            nuAvgHumidity = nodes[0].nuAvgHumidity,
+            nuAvgBrightness = nodes[0].nuAvgBrightness,
+            nuAvgSoilHumidity = nodes[0].nuAvgSoilHumidity,
+            nuAvgUv = nodes[0].nuAvgUv,
+            nuAvgVolatileGases = nodes[0].nuAvgVolatileGases;
+
+            zone.findOne({ _id: sbZoneId }, function (err, searchZone) {
+              if (err) {
+                console.log("Not found Zone");
+                return;
+              }
+
+              User.findOne({ _id: searchZone.userId }, function (err, searchUser) {
+
+                if (err) {
+                  console.log("Not found user");
+                  return;
+                }
+
+                if (nuAvgTemperature <= searchZone.MinTemperature || nuAvgTemperature >= searchZone.MaxTemperature) {
+                  
+                  var message = {
+                    notification: {
+                      title: 'Estado de la' + csbTemperature,
+                      body: 'La variable: ' + csbTemperature + ' esta por debajo o por encima del promedio establecido.'
+                    },
+                    token: searchUser.token
+                  };
+
+                  admin.messaging().send(message).then((response) => {
+                    console.log('Successfully sent message:', response);
+                  }).catch((error) => {
+                    console.log('Error sending message:', error);
+                  });
+                }
+                if (nuAvgSoilTemperature <= searchZone.MinSoilTemperature || nuAvgSoilTemperature >= searchZone.MaxSoilTemperature) {
+                  
+                  var message = {
+                    notification: {
+                      title: 'Estado de la' + csbSoilTemperature,
+                      body: 'La variable: ' + csbSoilTemperature + ' esta por debajo o por encima del promedio establecido.'
+                    },
+                    token: searchUser.token
+                  };
+
+                  admin.messaging().send(message).then((response) => {
+                    console.log('Successfully sent message:', response);
+                  }).catch((error) => {
+                    console.log('Error sending message:', error);
+                  });
+                }
+                if (nuAvgHumidity <= searchZone.MinHumidity || nuAvgHumidity >= searchZone.MaxHumidity) {
+                  
+                  var message = {
+                    notification: {
+                      title: 'Estado de la' + csbHumidity,
+                      body: 'La variable: ' + csbHumidity + ' esta por debajo o por encima del promedio establecido.'
+                    },
+                    token: searchUser.token
+                  };
+
+                  admin.messaging().send(message).then((response) => {
+                    console.log('Successfully sent message:', response);
+                  }).catch((error) => {
+                    console.log('Error sending message:', error);
+                  });
+                }
+                if (nuAvgBrightness <= searchZone.MinBrightness || nuAvgBrightness >= searchZone.MaxBrightness) {
+                  
+                  var message = {
+                    notification: {
+                      title: 'Estado de la' + csbBrightness,
+                      body: 'La variable: ' + csbBrightness + ' esta por debajo o por encima del promedio establecido.'
+                    },
+                    token: searchUser.token
+                  };
+
+                  admin.messaging().send(message).then((response) => {
+                    console.log('Successfully sent message:', response);
+                  }).catch((error) => {
+                    console.log('Error sending message:', error);
+                  });
+                }
+                if (nuAvgSoilHumidity <= searchZone.MinTemperature || nuAvgSoilHumidity >= searchZone.MaxTemperature) {
+                  
+                  var message = {
+                    notification: {
+                      title: 'Estado de la' + csbSoilHumidity,
+                      body: 'La variable: ' + csbSoilHumidity + ' esta por debajo o por encima del promedio establecido.'
+                    },
+                    token: searchUser.token
+                  };
+
+                  admin.messaging().send(message).then((response) => {
+                    console.log('Successfully sent message:', response);
+                  }).catch((error) => {
+                    console.log('Error sending message:', error);
+                  });
+                }
+                if (nuAvgUv <= searchZone.MinTemperature || nuAvgUv >= searchZone.MaxTemperature) {
+                  
+                  var message = {
+                    notification: {
+                      title: 'Estado de la' + csbUv,
+                      body: 'La variable: ' + csbUv + ' esta por debajo o por encima del promedio establecido.'
+                    },
+                    token: searchUser.token
+                  };
+
+                  admin.messaging().send(message).then((response) => {
+                    console.log('Successfully sent message:', response);
+                  }).catch((error) => {
+                    console.log('Error sending message:', error);
+                  });
+                }
+                if (nuAvgVolatileGases <= searchZone.MinTemperature || nuAvgVolatileGases >= searchZone.MaxTemperature) {
+                  
+                  var message = {
+                    notification: {
+                      title: 'Estado de la' + csbVolatileGases,
+                      body: 'La variable: ' + csbVolatileGases + ' esta por debajo o por encima del promedio establecido.'
+                    },
+                    token: searchUser.token
+                  };
+
+                  admin.messaging().send(message).then((response) => {
+                    console.log('Successfully sent message:', response);
+                  }).catch((error) => {
+                    console.log('Error sending message:', error);
+                  });
+                }
+
+              });
+
+            });
+
+          }
+
+        }
+
       }
 
-      User.findOne({ _id: searchZone.userId }, function (err, searchUser) {
-        if (err) {
-          console.log("Not found user");
-        }
-
-        if (Atemperature <= searchZone.MinTemperature || Atemperature >= searchZone.MaxTemperature) {
-
-          var message = {
-            notification: {
-              title: 'State of temperature',
-              body: 'The actual temperature is above or under the normal state'
-            },
-            token: searchUser.token
-          };
-
-          // Send a message to the device corresponding to the provided
-          // registration token.
-          admin.messaging().send(message).then((response) => {
-            // Response is a message ID string.
-            console.log('Successfully sent message:', response);
-          }).catch((error) => {
-            console.log('Error sending message:', error);
-          });
-        }
-
-        if (Ahumidity <= searchZone.MinHumidity || Ahumidity >= searchZone.MaxHumidity) {
-
-          var message = {
-            notification: {
-              title: 'State of humidity',
-              body: 'The actual humidity is above or under the normal state'
-            },
-            token: searchUser.token
-          };
-          // Send a message to the device corresponding to the provided
-          // registration token.
-          admin.messaging().send(message).then((response) => {
-            // Response is a message ID string.
-            console.log('Successfully sent message:', response);
-          }).catch((error) => {
-            console.log('Error sending message:', error);
-          });
-        }
-
-        if (Abrightness <= searchZone.MinBrightness || Abrightness >= searchZone.MaxBrightness) {
-
-          var message = {
-            notification: {
-              title: 'State of brightness',
-              body: 'The actual brightness is above or under the normal state'
-            },
-            token: searchUser.token
-          };
-          // Send a message to the device corresponding to the provided
-          // registration token.
-          admin.messaging().send(message).then((response) => {
-            // Response is a message ID string.
-            console.log('Successfully sent message:', response);
-          }).catch((error) => {
-            console.log('Error sending message:', error);
-          });
-        }
-
-      });
-
-    });
+    );
 
   }
 
@@ -211,21 +325,17 @@ module.exports = class ControlNode {
    * @param {Date} dtFinalDate Fecha final
    */
   static GetRangeNodes(sbZoneId, dtInitialDate, dtFinalDate, res) {
-    
+
     nodo.find({ zoneId: sbZoneId, date: { $lte: dtFinalDate, $gt: dtInitialDate } }, function (err, nodes) {
       if (err) {
         res.status(500).json({
           valor: "error en la recuperacion de los nodos " + err
         });
-      }
-      if (nodes == null) {
-        res.status(401).json({
-          valor: "No hay concidencia"
+      } else {
+        return res.status(200).json({
+          nodes
         });
       }
-      return res.status(200).json({
-        nodes
-      });
     });
   }
 
@@ -250,7 +360,7 @@ module.exports = class ControlNode {
         });
       }
 
-      if (nodos == null) {
+      if (!nodos.hasOwnProperty('0')) {
         res.status(401).json({
           valor: "No hay concidencia"
         });
@@ -289,13 +399,13 @@ module.exports = class ControlNode {
             _id: {
               zoneId: sbZoneId
             },
-            Atemperature: { $avg: '$temperature' },
-            Ahumidity: { $avg: '$humidity' },
-            Abrightness: { $avg: '$brightness' },
-            AsoilHumidity: { $avg: '$soilHumidity' },
-            Aaltitude: { $avg: '$altitude' },
-            Apressure: { $avg: '$pressure' },
-            Auv: { $avg: '$uv' }
+            nuAvgTemperature: { $avg: '$temperature' },
+            nuAvgSoilTemperature: { $avg: '$soilTemperature' },
+            nuAvgHumidity: { $avg: '$humidity' },
+            nuAvgBrightness: { $avg: '$brightness' },
+            nuAvgSoilHumidity: { $avg: '$soilHumidity' },
+            nuAvgUv: { $avg: '$uv' },
+            nuAvgVolatileGases: { $avg: '$volatileGases' }
           }
         }
       ],
@@ -307,7 +417,7 @@ module.exports = class ControlNode {
           });
         }
 
-        if (nodes == "") {
+        if (!nodes.hasOwnProperty('0')) {
           res.status(401).json({
             valor: "No hay concidencia"
           });
@@ -316,9 +426,13 @@ module.exports = class ControlNode {
 
           SendAlert(
             sbZoneId,
-            nodes[0].Atemperature,
-            nodes[0].Ahumidity,
-            nodes[0].Abrightness
+            nuAvgTemperature,
+            nuAvgSoilTemperature,
+            nuAvgHumidity,
+            nuAvgBrightness,
+            nuAvgSoilHumidity,
+            nuAvgUv,
+            nuAvgVolatileGases
           );
 
           return res.status(200).json({
@@ -332,8 +446,7 @@ module.exports = class ControlNode {
 
   static ToDayAvgNodes(sbZoneId, res, next) {
 
-    var myDate = new Date();
-
+    var myDate = new Date(); 
     myDate.setHours(0, 0, 0, 0);
 
     nodo.aggregate(
@@ -341,7 +454,8 @@ module.exports = class ControlNode {
         {
           $match:
           {
-            date: { $gte: myDate }
+            date: { $gte: myDate },
+            zoneId: sbZoneId
           }
         },
         {
@@ -368,7 +482,7 @@ module.exports = class ControlNode {
           });
         }
 
-        if (nodos == "") {
+        if (!nodos.hasOwnProperty('0')) {
           res.status(401).json({
             valor: "No hay concidencia"
           });
@@ -393,7 +507,8 @@ module.exports = class ControlNode {
         {
           $match:
           {
-            date: { $gte: FirstDay , $lt: LastDay }
+            date: { $gte: FirstDay, $lt: LastDay },
+            zoneId: sbZoneId
           }
         },
         {
@@ -420,7 +535,7 @@ module.exports = class ControlNode {
           });
         }
 
-        if (nodos == "") {
+        if (!nodos.hasOwnProperty('0')) {
           res.status(401).json({
             valor: "No hay concidencia"
           });
@@ -433,19 +548,20 @@ module.exports = class ControlNode {
 
       }
     )
-  }  
+  }
 
   static LastWeekAvgNodes(sbZoneId, res, next) {
     var date = new Date();
-    var FirstDay = new Date(date.getFullYear(), date.getMonth(), date.getDate()-6);
-    var LastDay = new Date(date.getFullYear(), date.getMonth(), date.getDate()-1);
+    var FirstDay = new Date(date.getFullYear(), date.getMonth(), date.getDate() - 6);
+    var LastDay = new Date(date.getFullYear(), date.getMonth(), date.getDate());
 
     nodo.aggregate(
       [
         {
           $match:
           {
-            date: { $gte: FirstDay , $lt: LastDay }
+            date: { $gte: FirstDay, $lt: LastDay },
+            zoneId: sbZoneId
           }
         },
         {
@@ -454,7 +570,7 @@ module.exports = class ControlNode {
             _id: {
               zoneId: sbZoneId,
               day: { $dayOfWeek: '$date' },
-              monthDay: { $dayOfMonth: '$date'}
+              monthDay: { $dayOfMonth: '$date' }
             },
             nuAvgTemperature: { $avg: '$temperature' },
             nuAvgSoilTemperature: { $avg: '$soilTemperature' },
@@ -474,7 +590,7 @@ module.exports = class ControlNode {
           });
         }
 
-        if (jsWeekData == "") {
+        if (!jsWeekData.hasOwnProperty('0')) {
           res.status(401).json({
             valor: "No hay concidencia"
           });
@@ -487,7 +603,7 @@ module.exports = class ControlNode {
 
       }
     )
-  }    
+  }
 
   static LastDaysAvgNodes(sbZoneId, res, next) {
     var myDate = new Date();
@@ -534,7 +650,7 @@ module.exports = class ControlNode {
           });
         }
 
-        if (nodes == "") {
+        if (!nodes.hasOwnProperty('0')) {
           res.status(401).json({
             valor: "No hay concidencia"
           });
@@ -589,7 +705,7 @@ module.exports = class ControlNode {
           });
         }
 
-        if (nodos == "") {
+        if (!nodos.hasOwnProperty('0')) {
           res.status(401).json({
             valor: "No hay concidencia"
           });
@@ -610,7 +726,8 @@ module.exports = class ControlNode {
         {
           $match:
           {
-            date: { $lt: dtFinalDate, $gte: dtInitialDate }
+            date: { $lt: dtFinalDate, $gte: dtInitialDate },
+            zoneId: sbZoneId
           }
         },
         {
@@ -637,7 +754,7 @@ module.exports = class ControlNode {
           });
         } else {
 
-          if (nodes == "") {
+          if (!nodes.hasOwnProperty('0')) {
 
             res.status(401).json({
               valor: "No hay concidencia"
