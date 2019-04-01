@@ -500,14 +500,14 @@ module.exports = class ControlNode {
   static MonthAvgNodes(sbZoneId, res, next) {
     var date = new Date();
     var FirstDay = new Date(date.getFullYear(), date.getMonth(), 1);
-    var LastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+    var LastDay = new Date(date.getFullYear(), date.getMonth(), 31);    
 
     nodo.aggregate(
       [
         {
           $match:
           {
-            date: { $gte: FirstDay, $lt: LastDay },
+            date: { $gte: FirstDay, $lte: LastDay },
             zoneId: sbZoneId
           }
         },
@@ -551,16 +551,19 @@ module.exports = class ControlNode {
   }
 
   static LastWeekAvgNodes(sbZoneId, res, next) {
-    var date = new Date();
-    var FirstDay = new Date(date.getFullYear(), date.getMonth(), date.getDate() - 6);
-    var LastDay = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    var FirstDay = new Date();
+    FirstDay.setDate(FirstDay.getDate() - 6);
+    var LastDay = new Date();
+    LastDay.setDate(LastDay.getDate() - 1);
+    console.log('FirstDay:' + FirstDay);
+    console.log('LastDay:' + LastDay);
 
     nodo.aggregate(
       [
         {
           $match:
           {
-            date: { $gte: FirstDay, $lt: LastDay },
+            date: { $gte: FirstDay, $lte: LastDay },
             zoneId: sbZoneId
           }
         },

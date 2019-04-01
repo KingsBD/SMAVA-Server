@@ -42,7 +42,7 @@ router.post('/GetRangeNodes', function (req, res, next) {
   try {
     var dtInitDate = new Date(req.body.dtInitDate),
     dtFinalDate = new Date(req.body.dtFinalDate)
-    sbZoneId = req.body.zoneId;  
+    sbZoneId = req.body.zoneId;     
 
     ControlNode.GetRangeNodes(sbZoneId, dtInitDate, dtFinalDate, res)
     ControlNode.GetRangeNodesAvgNotify(sbZoneId, dtInitDate, dtFinalDate)    

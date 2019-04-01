@@ -6,7 +6,7 @@ var express = require('express'),
   mqtt = require('mqtt'),
   ControlNode = require('../Class/ControlNode');
 /*Variables globa les*/
-var clients = [], topic = [], observableT;
+var clients = [], topic = [], observableT, angularClients = [];
 
 var nodeMessage = '{"data": {"temperature": 25,"humidity": 90,"soilHumidity": 50,"altitude": 10.5,"pressure": 90,"uv": 200,"brightness": 2000,"timestamp": "2016-11-25T16:24:37.295915988Z","gps": {"latitude": 52.3740364,"longitude": 4.9144401},"Battery": 60},"zoneId": "5ac012583e194204e0afef6b","firmwareVersion": "V1.0","config": {"mac": "24-EC-64-A1-A7-C4","rssi": -57,"channel": 13}}';
 
@@ -24,6 +24,7 @@ var nodeMessage = '{"data": {"temperature": 25,"humidity": 90,"soilHumidity": 50
   rejectUnauthorized: false
 */
 (async function () {
+  var myDate = new Date();
   let zones = await theme.find({}, function (err, zone) {
     if (err) {
       console.log(err);
@@ -33,30 +34,39 @@ var nodeMessage = '{"data": {"temperature": 25,"humidity": 90,"soilHumidity": 50
   });
 
   for (let i in zones) {
-    clients[i] = mqtt.connect('ws://smava:12345678@206.189.202.242:8083')
+    clients[i] = mqtt.connect('mqtt://smava:12345678@206.189.202.242:1883')
+    angularClients[i] = mqtt.connect('ws://smava:12345678@206.189.202.242:8083')
 
     topic[i] = zones[i]
 
     clients[i].on('connect', function () {
-      clients[i].subscribe(topic[i].TopicNode)
+      clients[i].subscribe(topic[i].TopicAngular)
     })
 
-    clients[i].on('message', function (topic, message) {
-      console.log('Topico de usuario' + topic);      
+    clients[i].on('message', function (topic, message) {   
       // message is Buffer
       var JsonNode = JSON.parse(message.toString());
 
+      JsonNode.data.timestamp = new Date();
+
       ControlNode.SaveNodeData(JsonNode);
+      
+      angularClients[i].on('connect', function () {
+        angularClients[i].subscribe(topic[i].TopicAngular)
+        angularClients[i].publish(topic[i].TopicAngular, JSON.stringify(JsonNode));
+        console.log(JsonNode);   
+        angularClients[i].end()
+      })
 
       clients[i].end()
 
     })
 
   }
-  
+  /*
   setTimeout(() => {
     currentData()    
-  }, 1000 * 10);
+  }, 1000 * 10);*/
 
  //var temporizador = setInterval(function () { currentData() }, 1000 * 60); // 10000ms = 10s
 
@@ -267,7 +277,7 @@ function currentData() {
     clients[i] = mqtt.connect('ws://smava:12345678@206.189.202.242:8083')
     clients[i].on('connect', function () {
       for (let index = 0; index < message.length; index++) {
-        clients[i].publish(topic[i].TopicNode, message[index]);
+        clients[i].publish(topic[i].TopicAngular, message[index]);
       }
     })
 
