@@ -1,9 +1,7 @@
 var express = require('express'),
   router = express.Router(),
-  mongoose = require('mongoose'),
-  User = mongoose.model('User'),
   jwt = require('jsonwebtoken'),
-  ControlUser = require('../Class/Controluser');;
+  ControlUser = require('../Class/UserManager');;
 
 
 module.exports = function (app) {

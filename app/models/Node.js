@@ -1,7 +1,7 @@
 var mongoose = require('mongoose'),
   Schema = mongoose.Schema;
 
-var NodoSchema = new Schema({
+var NodeSchema = new Schema({
   mac: String,
   lat: Number,
   lng: Number,
@@ -19,4 +19,4 @@ var NodoSchema = new Schema({
   date: Date
 });
 
-mongoose.model('Nodo', NodoSchema);
+mongoose.model('Node', NodeSchema);

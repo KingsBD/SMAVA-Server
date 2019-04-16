@@ -4,8 +4,8 @@
 */
 'use strict'
 var mongoose = require('mongoose'),
-  nodo = mongoose.model('Nodo'),
-  zone = mongoose.model('Theme'),
+  nodo = mongoose.model('Node'),
+  zone = mongoose.model('Zone'),
   User = mongoose.model('User'),
   csbTemperature = 'Temperatura',
   csbSoilTemperature = 'Temperatura de Suelo',
@@ -165,18 +165,18 @@ module.exports = class ControlNode {
 
         if (err) {
           console.log(err);
-          
-        } else {                    
+
+        } else {
 
           if (nodes.hasOwnProperty('0')) {
 
             let nuAvgTemperature = nodes[0].nuAvgTemperature,
-            nuAvgSoilTemperature = nodes[0].nuAvgSoilTemperature,
-            nuAvgHumidity = nodes[0].nuAvgHumidity,
-            nuAvgBrightness = nodes[0].nuAvgBrightness,
-            nuAvgSoilHumidity = nodes[0].nuAvgSoilHumidity,
-            nuAvgUv = nodes[0].nuAvgUv,
-            nuAvgVolatileGases = nodes[0].nuAvgVolatileGases;
+              nuAvgSoilTemperature = nodes[0].nuAvgSoilTemperature,
+              nuAvgHumidity = nodes[0].nuAvgHumidity,
+              nuAvgBrightness = nodes[0].nuAvgBrightness,
+              nuAvgSoilHumidity = nodes[0].nuAvgSoilHumidity,
+              nuAvgUv = nodes[0].nuAvgUv,
+              nuAvgVolatileGases = nodes[0].nuAvgVolatileGases;
 
             zone.findOne({ _id: sbZoneId }, function (err, searchZone) {
               if (err) {
@@ -192,7 +192,7 @@ module.exports = class ControlNode {
                 }
 
                 if (nuAvgTemperature <= searchZone.MinTemperature || nuAvgTemperature >= searchZone.MaxTemperature) {
-                  
+
                   var message = {
                     notification: {
                       title: 'Estado de la' + csbTemperature,
@@ -208,7 +208,7 @@ module.exports = class ControlNode {
                   });
                 }
                 if (nuAvgSoilTemperature <= searchZone.MinSoilTemperature || nuAvgSoilTemperature >= searchZone.MaxSoilTemperature) {
-                  
+
                   var message = {
                     notification: {
                       title: 'Estado de la' + csbSoilTemperature,
@@ -224,7 +224,7 @@ module.exports = class ControlNode {
                   });
                 }
                 if (nuAvgHumidity <= searchZone.MinHumidity || nuAvgHumidity >= searchZone.MaxHumidity) {
-                  
+
                   var message = {
                     notification: {
                       title: 'Estado de la' + csbHumidity,
@@ -240,7 +240,7 @@ module.exports = class ControlNode {
                   });
                 }
                 if (nuAvgBrightness <= searchZone.MinBrightness || nuAvgBrightness >= searchZone.MaxBrightness) {
-                  
+
                   var message = {
                     notification: {
                       title: 'Estado de la' + csbBrightness,
@@ -256,7 +256,7 @@ module.exports = class ControlNode {
                   });
                 }
                 if (nuAvgSoilHumidity <= searchZone.MinTemperature || nuAvgSoilHumidity >= searchZone.MaxTemperature) {
-                  
+
                   var message = {
                     notification: {
                       title: 'Estado de la' + csbSoilHumidity,
@@ -272,7 +272,7 @@ module.exports = class ControlNode {
                   });
                 }
                 if (nuAvgUv <= searchZone.MinTemperature || nuAvgUv >= searchZone.MaxTemperature) {
-                  
+
                   var message = {
                     notification: {
                       title: 'Estado de la' + csbUv,
@@ -288,7 +288,7 @@ module.exports = class ControlNode {
                   });
                 }
                 if (nuAvgVolatileGases <= searchZone.MinTemperature || nuAvgVolatileGases >= searchZone.MaxTemperature) {
-                  
+
                   var message = {
                     notification: {
                       title: 'Estado de la' + csbVolatileGases,
@@ -328,9 +328,9 @@ module.exports = class ControlNode {
 
     nodo.find({ zoneId: sbZoneId, date: { $lte: dtFinalDate, $gt: dtInitialDate } }, function (err, nodes) {
       if (err) {
-        res.status(500).json({
-          valor: "error en la recuperacion de los nodos " + err
-        });
+        
+        console.log(err);
+        
       } else {
         return res.status(200).json({
           nodes
@@ -339,114 +339,9 @@ module.exports = class ControlNode {
     });
   }
 
-  /**
-   * 
-   * @param {*} req 
-   * @param {*} res 
-   * @param {*} next 
-   * @param {*} sbZoneId 
-   */
-  static GetCurrentNodes(sbZoneId, res, next) {
-    var myDate = new Date();  /* Reemplazar por logica que traiga los rangos de la zona */
-    var myDate2 = new Date(myDate);
-    myDate.setMinutes(myDate.getMinutes() + 5);
-    myDate2.setMinutes(myDate2.getMinutes() - 5);
-
-    nodo.find({ zoneId: sbZoneId, date: { $lt: myDate, $gte: myDate2 } }, function (err, nodos) {
-
-      if (err) {
-        res.status(500).json({
-          valor: "error en la recuperacion de los nodos " + err
-        });
-      }
-
-      if (!nodos.hasOwnProperty('0')) {
-        res.status(401).json({
-          valor: "No hay concidencia"
-        });
-      }
-
-      return res.status(200).json({
-
-        nodos: nodos,
-        date1: myDate,
-        date2: myDate2
-
-      });
-
-    });
-
-  };
-
-  static LastAvgNodes(sbZoneId, res, next) {
-    var myDate = new Date();
-    var myDate2 = new Date();
-
-    myDate.setMinutes(myDate.getMinutes() + 5);
-    myDate2.setMinutes(myDate2.getMinutes() - 5);
-
-    nodo.aggregate(
-      [
-        {
-          $match:
-          {
-            date: { $lt: myDate, $gte: myDate2 }
-          }
-        },
-        {
-          $group:
-          {
-            _id: {
-              zoneId: sbZoneId
-            },
-            nuAvgTemperature: { $avg: '$temperature' },
-            nuAvgSoilTemperature: { $avg: '$soilTemperature' },
-            nuAvgHumidity: { $avg: '$humidity' },
-            nuAvgBrightness: { $avg: '$brightness' },
-            nuAvgSoilHumidity: { $avg: '$soilHumidity' },
-            nuAvgUv: { $avg: '$uv' },
-            nuAvgVolatileGases: { $avg: '$volatileGases' }
-          }
-        }
-      ],
-      function (err, nodes) {
-
-        if (err) {
-          res.status(500).json({
-            valor: "error en la recuperacion de los nodos " + err
-          });
-        }
-
-        if (!nodes.hasOwnProperty('0')) {
-          res.status(401).json({
-            valor: "No hay concidencia"
-          });
-
-        } else {
-
-          SendAlert(
-            sbZoneId,
-            nuAvgTemperature,
-            nuAvgSoilTemperature,
-            nuAvgHumidity,
-            nuAvgBrightness,
-            nuAvgSoilHumidity,
-            nuAvgUv,
-            nuAvgVolatileGases
-          );
-
-          return res.status(200).json({
-            nodes
-          });
-
-        }
-      }
-    );
-  }
-
   static ToDayAvgNodes(sbZoneId, res, next) {
 
-    var myDate = new Date(); 
+    var myDate = new Date();
     myDate.setHours(0, 0, 0, 0);
 
     nodo.aggregate(
@@ -477,22 +372,14 @@ module.exports = class ControlNode {
       function (err, nodos) {
 
         if (err) {
-          res.status(500).json({
-            valor: "error en la recuperacion de los nodos " + err
-          });
-        }
 
-        if (!nodos.hasOwnProperty('0')) {
-          res.status(401).json({
-            valor: "No hay concidencia"
-          });
+          console.log(err);
+
         } else {
           return res.status(200).json({
             nodes: nodos
           });
         }
-
-
       }
     )
   }
@@ -500,7 +387,7 @@ module.exports = class ControlNode {
   static MonthAvgNodes(sbZoneId, res, next) {
     var date = new Date();
     var FirstDay = new Date(date.getFullYear(), date.getMonth(), 1);
-    var LastDay = new Date(date.getFullYear(), date.getMonth(), 31);    
+    var LastDay = new Date(date.getFullYear(), date.getMonth(), 31);
 
     nodo.aggregate(
       [
@@ -530,22 +417,14 @@ module.exports = class ControlNode {
       function (err, nodos) {
 
         if (err) {
-          res.status(500).json({
-            valor: "error en la recuperacion de los nodos " + err
-          });
-        }
 
-        if (!nodos.hasOwnProperty('0')) {
-          res.status(401).json({
-            valor: "No hay concidencia"
-          });
+          console.log(err);
+
         } else {
           return res.status(200).json({
             nodes: nodos
           });
         }
-
-
       }
     )
   }
@@ -555,8 +434,6 @@ module.exports = class ControlNode {
     FirstDay.setDate(FirstDay.getDate() - 6);
     var LastDay = new Date();
     LastDay.setDate(LastDay.getDate() - 1);
-    console.log('FirstDay:' + FirstDay);
-    console.log('LastDay:' + LastDay);
 
     nodo.aggregate(
       [
@@ -588,22 +465,14 @@ module.exports = class ControlNode {
       function (err, jsWeekData) {
 
         if (err) {
-          res.status(500).json({
-            valor: "error en la recuperacion de los nodos " + err
-          });
-        }
-
-        if (!jsWeekData.hasOwnProperty('0')) {
-          res.status(401).json({
-            valor: "No hay concidencia"
-          });
+          console.log(err);
         } else {
+
           return res.status(200).json({
             jsWeekData
           });
+
         }
-
-
       }
     )
   }
@@ -648,76 +517,14 @@ module.exports = class ControlNode {
       function (err, nodes) {
 
         if (err) {
-          res.status(500).json({
-            valor: "error en la recuperacion de los nodos " + err
-          });
-        }
 
-        if (!nodes.hasOwnProperty('0')) {
-          res.status(401).json({
-            valor: "No hay concidencia"
-          });
+          console.log(err);
+
         } else {
           return res.status(200).json({
             nodes: nodes
           });
-
         }
-      }
-    );
-  }
-
-  static LastHourAvgNodes(sbZoneId, res, next) {
-    var myDate = new Date();
-    var myDate2 = new Date();
-
-    myDate2.setMinutes(0);
-
-    nodo.aggregate(
-      [
-        {
-          $match:
-          {
-            date: { $lt: myDate, $gte: myDate2 },
-            zoneId: sbZoneId
-          }
-        },
-        {
-          $group:
-          {
-            _id:
-            {
-              zoneId: sbZoneId,
-              hora: { $hour: '$date' }
-            },
-            Atemperature: { $avg: '$temperature' },
-            Ahumidity: { $avg: '$humidity' },
-            Abrightness: { $avg: '$brightness' },
-            AsoilHumidity: { $avg: '$soilHumidity' },
-            Aaltitude: { $avg: '$altitude' },
-            Apressure: { $avg: '$pressure' },
-            Auv: { $avg: '$uv' }
-          }
-        }
-      ],
-      function (err, nodos) {
-
-        if (err) {
-          res.status(500).json({
-            valor: "error en la recuperacion de los nodos " + err
-          });
-        }
-
-        if (!nodos.hasOwnProperty('0')) {
-          res.status(401).json({
-            valor: "No hay concidencia"
-          });
-        } else {
-          return res.status(200).json({
-            nodos: nodos
-          });
-        }
-
       }
     );
   }
@@ -752,24 +559,14 @@ module.exports = class ControlNode {
       function (err, nodes) {
 
         if (err) {
-          res.status(500).json({
-            valor: "error en la recuperacion de los nodos " + err
-          });
+
+          console.log(err);
+
         } else {
 
-          if (!nodes.hasOwnProperty('0')) {
-
-            res.status(401).json({
-              valor: "No hay concidencia"
-            });
-
-          } else {
-
-            return res.status(200).json({
-              nodes
-            });
-
-          }
+          return res.status(200).json({
+            nodes
+          });
 
         }
 
