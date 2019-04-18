@@ -7,15 +7,15 @@ var mongoose = require('mongoose'),
     User = mongoose.model('User'),
     jwt = require('jsonwebtoken');
 
-module.exports = class ControlSession {
+module.exports = class SessionManager {
 
     constructor() { }
 
     static loging(sbUserName, SbPassword, res, next) {
 
         User.findOne({ 'username': sbUserName, 'password': SbPassword }, function (err, data) {
-            if (err) {
-
+            if (err) {                
+                
                 return res.status(500).json({ err });
 
             } else {
@@ -30,8 +30,6 @@ module.exports = class ControlSession {
                 });
 
             }
-        })
+        });
     }
-
-
 }    

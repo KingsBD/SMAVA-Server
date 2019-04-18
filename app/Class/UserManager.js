@@ -3,7 +3,7 @@ var mongoose = require('mongoose'),
     User = mongoose.model('User');
 const csbUserRole = 'ROLE_USER';
 
-module.exports = class ControlNode {
+module.exports = class UserManager {
 
     constructor() { }
 

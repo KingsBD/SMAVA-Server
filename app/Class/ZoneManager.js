@@ -6,7 +6,7 @@
 var mongoose = require('mongoose'),
     mdZone = mongoose.model('Zone');
 
-module.exports = class ControlZone {
+module.exports = class ZoneManager {
 
     constructor() { }
 
@@ -26,7 +26,7 @@ module.exports = class ControlZone {
             } else {
                 if (zones == "" || sbZoneName == zones[0].zonename) {
 
-                    var rcNewZone = new Zone(
+                    var rcNewZone = new mdZone(
                         {
                             userId: sbUserId,
                             zonename: sbZoneName,

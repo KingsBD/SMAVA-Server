@@ -3,8 +3,8 @@ var express = require('express'),
   mongoose = require('mongoose'),
   mdZone = mongoose.model('Zone'),
   mqtt = require('mqtt'),
-  ControlNode = require('../Class/NodeManager');
-/*Variables globa les*/
+  nodeManager = require('../Class/NodeManager');
+
 var clients = [], angularClients = [];
 
 /*
@@ -24,6 +24,9 @@ var clients = [], angularClients = [];
 */
 
 (async function () {
+  var nodeMessage = '{"data": {"temperature": 25,"humidity": 90,"soilHumidity": 50,"altitude": 10.5,"pressure": 90,"uv": 200,"brightness": 2000,"timestamp": "2019-04-17T16:24:37.295915988Z","gps": {"latitude": 52.3740364,"longitude": 4.9144401},"Battery": 60},"zoneId": "5ac012583e194204e0afef6b","firmwareVersion": "V1.0","config": {"mac": "24-EC-64-A1-A7-C4","rssi": -57,"channel": 13}}';
+  nodeMessage = JSON.parse(nodeMessage.toString());
+  nodeManager.SaveNodeData(nodeMessage);
 
   let zones = await mdZone.find({}, function (err, zone) {
     if (err) {
@@ -34,8 +37,10 @@ var clients = [], angularClients = [];
   });
 
   for (let i in zones) {
-    clients[i] = mqtt.connect('mqtt://smava:12345678@206.189.202.242:1883')
-    angularClients[i] = mqtt.connect('ws://smava:12345678@206.189.202.242:8083')
+    
+    clients[i] = mqtt.connect('ws://smava:12345678@206.189.202.242:8083');
+    //clients[i] = mqtt.connect('mqtt://smava:12345678@206.189.202.242:1883')
+    angularClients[i] = mqtt.connect('ws://smava:12345678@206.189.202.242:8083');
 
     clients[i].on('connect', function () {
       clients[i].subscribe(zones[i].topicAngular)
@@ -47,7 +52,7 @@ var clients = [], angularClients = [];
 
       JsonNode.data.timestamp = new Date();
 
-      ControlNode.SaveNodeData(JsonNode);
+      nodeManager.SaveNodeData(JsonNode);
 
       angularClients[i].on('connect', function () {
         angularClients[i].subscribe(zones[i].topicAngular)
