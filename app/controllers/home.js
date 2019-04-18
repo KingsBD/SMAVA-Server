@@ -11,17 +11,6 @@ var clients = [], topic = [], observableT;
 var nodeMessage = '{"data": {"temperature": 25,"humidity": 90,"soilHumidity": 50,"altitude": 10.5,"pressure": 90,"uv": 200,"brightness": 2000,"timestamp": "2016-11-25T16:24:37.295915988Z","gps": {"latitude": 52.3740364,"longitude": 4.9144401},"Battery": 60},"zoneId": "5ac012583e194204e0afef6b","firmwareVersion": "V1.0","config": {"mac": "24-EC-64-A1-A7-C4","rssi": -57,"channel": 13}}';
 
 /*
-  hostname: '206.189.202.242',
-  port: 8083,
-  username: 'smava',
-  password: '12345678',
-  protocol: 'ws',
-  hostname: 'm15.cloudmqtt.com',
-  port: 38025,
-  username: 'wejhvkqd',
-  password: 'kzPt9khkXUDk',
-  protocol: 'wss',
-  rejectUnauthorized: false
 */
 (async function () {
   let zones = await theme.find({}, function (err, zone) {
@@ -33,7 +22,7 @@ var nodeMessage = '{"data": {"temperature": 25,"humidity": 90,"soilHumidity": 50
   });
 
   for (let i in zones) {
-    clients[i] = mqtt.connect('ws://smava:12345678@206.189.202.242:8083')
+    clients[i] = mqtt.connect('')
 
     topic[i] = zones[i]
 
@@ -252,7 +241,7 @@ function currentData() {
     message.push(JSON.stringify(JsonNode[index]));
   }
 
-  angularClients = mqtt.connect('ws://smava:12345678@206.189.202.242:8083')
+  angularClients = mqtt.connect('')
   angularClients.on('connect', function () {
     angularClients.subscribe("A1")
     for (let index = 0; index < message.length; index++) {
@@ -262,8 +251,8 @@ function currentData() {
   })
 
   for (let i in topic) {
-    /*mqtt://wejhvkqd:kzPt9khkXUDk@m15.cloudmqtt.com:18025 */
-    clients[i] = mqtt.connect('ws://smava:12345678@206.189.202.242:8083')
+
+    clients[i] = mqtt.connect('')
     clients[i].on('connect', function () {
       for (let index = 0; index < message.length; index++) {
         clients[i].publish(topic[i].TopicNode, message[index]);
