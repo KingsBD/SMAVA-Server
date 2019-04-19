@@ -9,10 +9,10 @@ module.exports = function (app) {
 };
 
 router.use('/', function (req, res, next) {
-  jwt.verify(req.query.token, 'SMAVA', function(err, decoded){
-    if(err){
+  jwt.verify(req.query.token, 'SMAVA', function (err, decoded) {
+    if (err) {
       return res.status(401).json({
-          valor: "No esta autenticado: " + err
+        valor: "No esta autenticado: " + err
       });
     }
     next();
@@ -22,80 +22,81 @@ router.use('/', function (req, res, next) {
 router.post('/CreateUser', function (req, res) {
 
   var sbUsername = req.body.username.toLowerCase(),
-  sbPassword = req.body.password,
-  sbName = req.body.name,
-  sbLastname =  req.body.lastname,
-  sbEmail = req.body.email;
+    sbPassword = req.body.password,
+    sbName = req.body.name,
+    sbLastname = req.body.lastname,
+    sbEmail = req.body.email;
 
-  ControlUser.CreateUser 
-  (
-    sbUsername,
-    sbPassword,
-    sbName,
-    sbLastname,
-    sbEmail,
-    res
-  );
+  ControlUser.CreateUser
+    (
+      sbUsername,
+      sbPassword,
+      sbName,
+      sbLastname,
+      sbEmail,
+      res
+    );
 
 });
 
 router.post('/Users', function (req, res, next) {
 
-  ControlUser.GetUsers(res,next);
+  ControlUser.GetUsers(res, next);
 
 });
 
 router.post('/SearchUser', function (req, res, next) {
-  
+
   var sbUsername = req.body.username.toLowerCase();
 
-  ControlUser.SearchUserbyName(sbUsername,res,next);
+  ControlUser.SearchUserbyName(sbUsername, res, next);
 
 });
 
 router.post('/findUser', function (req, res, next) {
-  
+
   var SbUserId = req.body._id;
 
-  ControlUser.GetUserById(SbUserId,res,next);
+  ControlUser.GetUserById(SbUserId, res, next);
 
 });
 
-router.post('/DeleteUser', function (req, res) {
+router.post('/DeleteUser', function (req, res, next) {
 
-  var SbUserId = req.body._id;
+  var sbUserId = req.body._id
+  sbUsername = req.body.username;
 
-  ControlUser.DeleteUser(SbUserId,res,next);
+  ControlUser.DeleteUser(sbUserId, sbUsername, res);
 
 });
 
 router.post('/UpdateUser', function (req, res) {
 
-  var SbUserId = req.body._id, 
-  sbUsername = req.body.username.toLowerCase(),
-  sbPassword = req.body.password,
-  sbName = req.body.name,
-  sbLastname =  req.body.lastname,
-  sbEmail = req.body.email;
+  var SbUserId = req.body._id,
+    sbUsername = req.body.username.toLowerCase(),
+    sbPassword = req.body.password,
+    sbName = req.body.name,
+    sbLastname = req.body.lastname,
+    sbEmail = req.body.email;
 
-  ControlUser.UpdateUser 
-  (
-    SbUserId,
-    sbUsername,
-    sbPassword,
-    sbName,
-    sbLastname,
-    sbEmail,
-    res
-  );
+  ControlUser.UpdateUser
+    (
+      SbUserId,
+      sbUsername,
+      sbPassword,
+      sbName,
+      sbLastname,
+      sbEmail,
+      res
+    );
 
 });
 
 router.post('/UpdateUserToken', function (req, res) {
 
-  var SbUserId = req.body._id, 
-  sbToken = req.body.tokenkey;
-  
-  ControlUser.UpdateUserToken(SbUserId,sbToken,res);
+  var SbUserId = req.body._id,
+    sbToken = req.body.tokenkey;
+
+  ControlUser.UpdateUserToken(SbUserId, sbToken, res);
 
 });

@@ -76,7 +76,7 @@ module.exports = class UserManager {
 
             }
 
-        });
+        }).sort( { name: 1 } );
     }
 
     static SearchUserbyName(sbUsername, res, next) {
@@ -118,20 +118,20 @@ module.exports = class UserManager {
         });
     }
 
-    static DeleteUser(SbUserId, res, next) {
-
-        User.deleteOne({ _id: SbUserId }, function (err, obj) {
+    static DeleteUser(sbUserId, sbUsername, res) {        
+        
+        User.deleteOne({ _id: sbUserId }, function (err, obj) {
 
             if (err) {
-
+                
                 res.status(500).json({
                     err
                 });
 
             } else {
-
+                
                 return res.status(200).json({
-                    value: "Se ha borrado el usuario: " + req.body.username + obj.result.n
+                    value: "Se ha borrado el usuario: " + sbUsername + obj.result.n
                 });
             }
 
@@ -157,7 +157,7 @@ module.exports = class UserManager {
                 });
 
             } else {
-                if (users == "" || sbUsername != users[0].username) {
+                if (users == "" || sbUsername == users[0].username) {
 
                     var myquery = { _id: SbUserId };
 

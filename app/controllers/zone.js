@@ -135,7 +135,7 @@ var express = require('express'),
   router.post('/getZones', function (req, res, next) {
 
     var sbUserId = req.body.userId;
-
+    
     ControlZone.GetZonesByUserId(sbUserId, res, next);
 
   });

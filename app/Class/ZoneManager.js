@@ -165,7 +165,7 @@ module.exports = class ZoneManager {
 
             if (err) {
                 return res.status(500).json({ err });
-            } else {
+            } else {                              
                 return res.status(200).json({ zones });
             }
 
