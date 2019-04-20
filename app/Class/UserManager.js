@@ -80,7 +80,8 @@ module.exports = class UserManager {
     }
 
     static SearchUserbyName(sbUsername, res, next) {
-        User.find({ role: csbUserRole, username: { $gt: sbUsername } }, function (err, users) {
+
+        User.find({ role: csbUserRole, username: {'$regex': sbUsername}   }, function (err, users) {
 
             if (err) {
 

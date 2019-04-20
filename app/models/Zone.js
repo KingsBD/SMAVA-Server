@@ -8,6 +8,7 @@ var ZoneSchema = new Schema({
   topicNode: String,
   topicAngular: String,
   refreshWindow: Number,
+  affectationArea: Number,
   minTemperature: Number,
   maxTemperature: Number,
   minSoilTemperature: Number,

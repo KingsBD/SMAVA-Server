@@ -19,39 +19,46 @@ var express = require('express'),
   });
 
   /* CRUD */
-  router.post('/CreateZone', function (req, res) {
-
-    var sbUserId = req.body.userId,
-    sbtZoneName = req.body.themename.toLowerCase(),
-    sbDescription = req.body.description,
-    sbTopicNode = req.body.TopicNode,
-    sbTopicAngular = req.body.TopicAngular,
-    nuRefreshWindow = req.body.refreshWindow,
-    nuMinTemperature = req.body.MinTemperature,
-    nuMaxTemperature = req.body.MaxTemperature,
-    nuMinHumidity = req.body.MinHumidity,
-    nuMaxHumidity = req.body.MaxHumidity,
-    nuMinSoilHumidity = req.body.MinSoilHumidity,
-    nuMaxSoilHumidity = req.body.MaxSoilHumidity,
-    nuMinPressure = req.body.MinPressure,
-    nuMaxPressure = req.body.MaxPressure,
-    nuMinUV = req.body.MinUV,
-    nuMaxUV = req.body.MaxUV,
-    nuMinBrightness = req.body.MinBrightness,
-    nuMaxBrightness = req.body.MaxBrightness,
-    nuMatrixMarginX = req.body.MatrixMarginX,
-    nuMatrixMarginY = req.body.MatrixMarginY;
-  
-    ControlZone.CreateZone
-    (
+  router.post('/CreateZone', function (req, res,next) {   
+    
+      var sbUserId = req.body.userId,                     
+      sbZoneName = req.body.zoneName.toLowerCase(),                      
+      sbDescription = req.body.description,                     
+      sbTopicNode = req.body.topicNode,                     
+      sbTopicAngular = req.body.topicAngular,                     
+      nuRefreshWindow = req.body.refreshWindow,                     
+      nuAffectationArea = req.body.affectationArea,                     
+      nuMinTemperature = req.body.minTemperature,                     
+      nuMaxTemperature = req.body.maxTemperature,                     
+      nuMinSoilTemperature = req.body.minSoilTemperature,
+      nuMaxSoilTemperature = req.body.maxSoilTemperature,
+      nuMinHumidity = req.body.minHumidity,                     
+      nuMaxHumidity = req.body.maxHumidity,                     
+      nuMinSoilHumidity = req.body.minSoilHumidity,                     
+      nuMaxSoilHumidity = req.body.maxSoilHumidity,                     
+      nuMinPressure = req.body.minPressure,                     
+      nuMaxPressure = req.body.maxPressure,                     
+      nuMinUV = req.body.minUV,                     
+      nuMaxUV = req.body.maxUV,                     
+      nuMinBrightness = req.body.minBrightness,                     
+      nuMaxBrightness = req.body.maxBrightness,  
+      nuMinVolatileGases = req.body.minVolatileGases,                     
+      nuMaxVolatileGases = req.body.maxVolatileGases,                     
+      nuMatrixMarginX = req.body.matrixMarginX,                     
+      nuMatrixMarginY = req.body.matrixMarginY;      
+    
+    ControlZone.CreateZone(
       sbUserId,
-      sbtZoneName,
+      sbZoneName,
       sbDescription,
       sbTopicNode,
       sbTopicAngular,
       nuRefreshWindow,
+      nuAffectationArea,
       nuMinTemperature,
       nuMaxTemperature,
+      nuMinSoilTemperature,
+      nuMaxSoilTemperature,
       nuMinHumidity,
       nuMaxHumidity,
       nuMinSoilHumidity,
@@ -62,49 +69,58 @@ var express = require('express'),
       nuMaxUV,
       nuMinBrightness,
       nuMaxBrightness,
+      nuMinVolatileGases,
+      nuMaxVolatileGases,
       nuMatrixMarginX,
-      nuMatrixMarginY,        
+      nuMatrixMarginY, 
       res,
       next
     );
-  
+
   });
   
-  router.post('/UpdateZone', function (req, res) {
+  router.post('/UpdateZone', function (req, res, next) {
   
     var sbZoneId = req.body._id,
-    sbUserId = req.body.userId,
-    sbtZoneName = req.body.themename.toLowerCase(),
-    sbDescription = req.body.description,
-    sbTopicNode = req.body.topicNode,
-    sbTopicAngular = req.body.topicAngular,
-    nuRefreshWindow = req.body.refreshWindow,
-    nuMinTemperature = req.body.minTemperature,
-    nuMaxTemperature = req.body.maxTemperature,
-    nuMinHumidity = req.body.minHumidity,
-    nuMaxHumidity = req.body.maxHumidity,
-    nuMinSoilHumidity = req.body.minSoilHumidity,
-    nuMaxSoilHumidity = req.body.maxSoilHumidity,
-    nuMinPressure = req.body.minPressure,
-    nuMaxPressure = req.body.maxPressure,
-    nuMinUV = req.body.minUV,
-    nuMaxUV = req.body.maxUV,
-    nuMinBrightness = req.body.minBrightness,
-    nuMaxBrightness = req.body.maxBrightness,
-    nuMatrixMarginX = req.body.matrixMarginX,
-    nuMatrixMarginY = req.body.matrixMarginY;
-  
-    ControlZone.UpdateZone
-    (
+    sbUserId = req.body.userId,                     
+    sbZoneName = req.body.zoneName.toLowerCase(),                      
+    sbDescription = req.body.description,                     
+    sbTopicNode = req.body.topicNode,                     
+    sbTopicAngular = req.body.topicAngular,                     
+    nuRefreshWindow = req.body.refreshWindow,                     
+    nuAffectationArea = req.body.affectationArea,                     
+    nuMinTemperature = req.body.minTemperature,                     
+    nuMaxTemperature = req.body.maxTemperature,                     
+    nuMinSoilTemperature = req.body.minSoilTemperature,
+    nuMaxSoilTemperature = req.body.maxSoilTemperature,
+    nuMinHumidity = req.body.minHumidity,                     
+    nuMaxHumidity = req.body.maxHumidity,                     
+    nuMinSoilHumidity = req.body.minSoilHumidity,                     
+    nuMaxSoilHumidity = req.body.maxSoilHumidity,                     
+    nuMinPressure = req.body.minPressure,                     
+    nuMaxPressure = req.body.maxPressure,                     
+    nuMinUV = req.body.minUV,                     
+    nuMaxUV = req.body.maxUV,                     
+    nuMinBrightness = req.body.minBrightness,                     
+    nuMaxBrightness = req.body.maxBrightness,  
+    nuMinVolatileGases = req.body.minVolatileGases,                     
+    nuMaxVolatileGases = req.body.maxVolatileGases,                     
+    nuMatrixMarginX = req.body.matrixMarginX,                     
+    nuMatrixMarginY = req.body.matrixMarginY;      
+
+    ControlZone.UpdateZone(
       sbZoneId,
       sbUserId,
-      sbtZoneName,
+      sbZoneName,
       sbDescription,
       sbTopicNode,
       sbTopicAngular,
       nuRefreshWindow,
+      nuAffectationArea,
       nuMinTemperature,
       nuMaxTemperature,
+      nuMinSoilTemperature,
+      nuMaxSoilTemperature,
       nuMinHumidity,
       nuMaxHumidity,
       nuMinSoilHumidity,
@@ -115,20 +131,21 @@ var express = require('express'),
       nuMaxUV,
       nuMinBrightness,
       nuMaxBrightness,
+      nuMinVolatileGases,
+      nuMaxVolatileGases,
       nuMatrixMarginX,
-      nuMatrixMarginY,        
+      nuMatrixMarginY,              
       res,
       next
     );
   
   });
   
-  router.post('/DeleteZone', function (req, res) {
+  router.post('/DeleteZone', function (req, res, next) {
     
-    var sbZoneName = req.body.themename
     var sbZoneId = req.body._id;
   
-    ControlZone.DeleteZone(sbZoneId,sbZoneName);
+    ControlZone.DeleteZone(sbZoneId,res);
   
   });  
   

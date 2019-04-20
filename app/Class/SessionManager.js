@@ -26,7 +26,8 @@ module.exports = class SessionManager {
                     token: token,
                     username: data.username,
                     role: data.role,
-                    _id: data._id
+                    _id: data._id,
+                    info: data
                 });
 
             }
