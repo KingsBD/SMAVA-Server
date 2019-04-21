@@ -40,15 +40,14 @@ module.exports = class ZoneManager {
         next
     ) {
         
-        mdZone.find({ userId: sbUserId, zoneName: sbZoneName }, function (err, zones) {
+        mdZone.find({ $or: [{topicNode: sbTopicNode}, {topicAngular: sbTopicAngular}] }, function (err, zones) {
 
             if (err) {              
                 console.log(err);
                 
                 return res.status(500).json({ err });
             } else {
-                if (zones == "" || sbZoneName === zones[0].zoneName) {
-                    
+                if (zones == "") {
                     var rcNewZone = new mdZone(
                         {
                             userId: sbUserId,
@@ -84,9 +83,9 @@ module.exports = class ZoneManager {
                     return res.status(200).json({
                         valor: "Yes"
                     });
-
+                                    
                 } else {
-                    console.log(err);
+
                     return res.status(401).json({
                         valor: "Ya existe una zona con este nombre",
                         zones: zones
@@ -128,7 +127,7 @@ module.exports = class ZoneManager {
         res,
         next
     ) {
-        mdZone.find({ userId: sbUserId, zoneName: sbZoneName }, function (err, zones) {
+        mdZone.find({ $or: [{topicNode: sbTopicNode}, {topicAngular: sbTopicAngular}] }, function (err, zones) {
 
             if (err) {
 
