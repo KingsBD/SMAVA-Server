@@ -23,9 +23,7 @@ var express = require('express'),
     
       var sbUserId = req.body.userId,                     
       sbZoneName = req.body.zoneName.toLowerCase(),                      
-      sbDescription = req.body.description,                     
-      sbTopicNode = req.body.topicNode,                     
-      sbTopicAngular = req.body.topicAngular,                     
+      sbDescription = req.body.description,                                        
       nuRefreshWindow = req.body.refreshWindow,                     
       nuAffectationArea = req.body.affectationArea,                     
       nuMinTemperature = req.body.minTemperature,                     
@@ -43,16 +41,12 @@ var express = require('express'),
       nuMinBrightness = req.body.minBrightness,                     
       nuMaxBrightness = req.body.maxBrightness,  
       nuMinVolatileGases = req.body.minVolatileGases,                     
-      nuMaxVolatileGases = req.body.maxVolatileGases,                     
-      nuMatrixMarginX = req.body.matrixMarginX,                     
-      nuMatrixMarginY = req.body.matrixMarginY;      
+      nuMaxVolatileGases = req.body.maxVolatileGases;
     
     ControlZone.CreateZone(
       sbUserId,
       sbZoneName,
       sbDescription,
-      sbTopicNode,
-      sbTopicAngular,
       nuRefreshWindow,
       nuAffectationArea,
       nuMinTemperature,
@@ -71,8 +65,6 @@ var express = require('express'),
       nuMaxBrightness,
       nuMinVolatileGases,
       nuMaxVolatileGases,
-      nuMatrixMarginX,
-      nuMatrixMarginY, 
       res,
       next
     );
@@ -80,13 +72,11 @@ var express = require('express'),
   });
   
   router.post('/UpdateZone', function (req, res, next) {
-  
+    
     var sbZoneId = req.body._id,
     sbUserId = req.body.userId,                     
     sbZoneName = req.body.zoneName.toLowerCase(),                      
-    sbDescription = req.body.description,                     
-    sbTopicNode = req.body.topicNode,                     
-    sbTopicAngular = req.body.topicAngular,                     
+    sbDescription = req.body.description,                                        
     nuRefreshWindow = req.body.refreshWindow,                     
     nuAffectationArea = req.body.affectationArea,                     
     nuMinTemperature = req.body.minTemperature,                     
@@ -104,17 +94,13 @@ var express = require('express'),
     nuMinBrightness = req.body.minBrightness,                     
     nuMaxBrightness = req.body.maxBrightness,  
     nuMinVolatileGases = req.body.minVolatileGases,                     
-    nuMaxVolatileGases = req.body.maxVolatileGases,                     
-    nuMatrixMarginX = req.body.matrixMarginX,                     
-    nuMatrixMarginY = req.body.matrixMarginY;      
+    nuMaxVolatileGases = req.body.maxVolatileGases;      
 
     ControlZone.UpdateZone(
       sbZoneId,
       sbUserId,
       sbZoneName,
       sbDescription,
-      sbTopicNode,
-      sbTopicAngular,
       nuRefreshWindow,
       nuAffectationArea,
       nuMinTemperature,
@@ -132,9 +118,7 @@ var express = require('express'),
       nuMinBrightness,
       nuMaxBrightness,
       nuMinVolatileGases,
-      nuMaxVolatileGases,
-      nuMatrixMarginX,
-      nuMatrixMarginY,              
+      nuMaxVolatileGases,           
       res,
       next
     );

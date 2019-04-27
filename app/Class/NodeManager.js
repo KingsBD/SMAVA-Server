@@ -162,7 +162,7 @@ module.exports = class NodeManager {
     )
   }
 
-  static MonthAvgNodes(sbZoneId, res, next) {
+  static MonthDataNodes(sbZoneId, res, next) {
     var date = new Date();
     var FirstDay = new Date(date.getFullYear(), date.getMonth(), 1);
     var LastDay = new Date(date.getFullYear(), date.getMonth(), 31);
@@ -188,7 +188,21 @@ module.exports = class NodeManager {
             nuAvgBrightness: { $avg: '$brightness' },
             nuAvgSoilHumidity: { $avg: '$soilHumidity' },
             nuAvgUv: { $avg: '$uv' },
-            nuAvgVolatileGases: { $avg: '$volatileGases' }
+            nuAvgVolatileGases: { $avg: '$volatileGases' },
+            nuMinTemperature: { $min: '$temperature' },
+            nuMaxTemperature: { $max: '$temperature' },
+            nuMinSoilTemperature: { $min: '$soilTemperature' },
+            nuMaxSoilTemperature: { $max: '$soilTemperature' },
+            nuMinHumidity: { $min: '$humidity' },
+            nuMaxHumidity: { $max: '$humidity' },
+            nuMinBrightness: { $min: '$brightness' },
+            nuMaxBrightness: { $max: '$brightness' },
+            nuMinSoilHumidity: { $min: '$soilHumidity' },
+            nuMaxSoilHumidity: { $max: '$soilHumidity' },
+            nuMinUv: { $min: '$uv' },
+            nuMaxUv: { $max: '$uv' },
+            nuMinVolatileGases: { $min: '$volatileGases' },
+            nuMaxVolatileGases: { $max: '$volatileGases' }
           }
         }
       ],
@@ -207,7 +221,7 @@ module.exports = class NodeManager {
     )
   }
 
-  static LastWeekAvgNodes(sbZoneId, res, next) {
+  static LastWeekDataNodes(sbZoneId, res, next) {
     var FirstDay = new Date();
     FirstDay.setDate(FirstDay.getDate() - 6);
     var LastDay = new Date();
@@ -236,7 +250,21 @@ module.exports = class NodeManager {
             nuAvgBrightness: { $avg: '$brightness' },
             nuAvgSoilHumidity: { $avg: '$soilHumidity' },
             nuAvgUv: { $avg: '$uv' },
-            nuAvgVolatileGases: { $avg: '$volatileGases' }
+            nuAvgVolatileGases: { $avg: '$volatileGases' },
+            nuMinTemperature: { $min: '$temperature' },
+            nuMaxTemperature: { $max: '$temperature' },
+            nuMinSoilTemperature: { $min: '$soilTemperature' },
+            nuMaxSoilTemperature: { $max: '$soilTemperature' },
+            nuMinHumidity: { $min: '$humidity' },
+            nuMaxHumidity: { $max: '$humidity' },
+            nuMinBrightness: { $min: '$brightness' },
+            nuMaxBrightness: { $max: '$brightness' },
+            nuMinSoilHumidity: { $min: '$soilHumidity' },
+            nuMaxSoilHumidity: { $max: '$soilHumidity' },
+            nuMinUv: { $min: '$uv' },
+            nuMaxUv: { $max: '$uv' },
+            nuMinVolatileGases: { $min: '$volatileGases' },
+            nuMaxVolatileGases: { $max: '$volatileGases' }
           }
         }
       ],

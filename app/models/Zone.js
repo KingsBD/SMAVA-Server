@@ -5,8 +5,6 @@ var ZoneSchema = new Schema({
   userId: String,
   zoneName: String,
   description: String,
-  topicNode: String,
-  topicAngular: String,
   refreshWindow: Number,
   affectationArea: Number,
   minTemperature: Number,
@@ -24,9 +22,7 @@ var ZoneSchema = new Schema({
   minVolatileGases: Number,
   maxVolatileGases: Number, 
   minPressure: Number,
-  maxPressure: Number,   
-  matrixMarginX: Number,
-  matrixMarginY: Number
+  maxPressure: Number
 });
 
 mongoose.model('Zone', ZoneSchema);

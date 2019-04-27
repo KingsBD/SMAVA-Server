@@ -42,17 +42,17 @@ router.post('/ToDayAvgNodes', function (req, res, next) {
 
 });
 
-router.post('/MonthAvgNodes', function (req, res, next) {
+router.post('/MonthDataNodes', function (req, res, next) {
   var sbZoneId = req.body.zoneId;
 
-  ControlNode.MonthAvgNodes(sbZoneId, res, next)
+  ControlNode.MonthDataNodes(sbZoneId, res, next)
 
 });
 
-router.post('/LastWeekAvgNodes', function (req, res, next) {
+router.post('/LastWeekDataNodes', function (req, res, next) {
   var sbZoneId = req.body.zoneId;
 
-  ControlNode.LastWeekAvgNodes(sbZoneId, res, next)
+  ControlNode.LastWeekDataNodes(sbZoneId, res, next)
 
 });
 

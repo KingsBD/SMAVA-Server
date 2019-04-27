@@ -4,7 +4,8 @@
 */
 'use strict'
 var mongoose = require('mongoose'),
-    mdZone = mongoose.model('Zone');
+    mdZone = mongoose.model('Zone'),
+    mqttManager = require('../Class/MqttManager');
 
 module.exports = class ZoneManager {
 
@@ -14,8 +15,6 @@ module.exports = class ZoneManager {
         sbUserId,
         sbZoneName,
         sbDescription,
-        sbTopicNode,
-        sbTopicAngular,
         nuRefreshWindow,
         nuAffectationArea,
         nuMinTemperature,
@@ -34,17 +33,15 @@ module.exports = class ZoneManager {
         nuMaxBrightness,
         nuMinVolatileGases,
         nuMaxVolatileGases,
-        nuMatrixMarginX,
-        nuMatrixMarginY, 
         res,
         next
     ) {
-        
-        mdZone.find({ $or: [{topicNode: sbTopicNode}, {topicAngular: sbTopicAngular}] }, function (err, zones) {
 
-            if (err) {              
+        mdZone.find({ $and: [{ userId: sbUserId }, { zoneName: sbZoneName }] }, function (err, zones) {
+
+            if (err) {
                 console.log(err);
-                
+
                 return res.status(500).json({ err });
             } else {
                 if (zones == "") {
@@ -53,8 +50,6 @@ module.exports = class ZoneManager {
                             userId: sbUserId,
                             zoneName: sbZoneName,
                             description: sbDescription,
-                            topicNode: sbTopicNode,
-                            topicAngular: sbTopicAngular,
                             refreshWindow: nuRefreshWindow,
                             affectationArea: nuAffectationArea,
                             minTemperature: nuMinTemperature,
@@ -72,18 +67,20 @@ module.exports = class ZoneManager {
                             minVolatileGases: nuMinVolatileGases,
                             maxVolatileGases: nuMaxVolatileGases,
                             minBrightness: nuMinBrightness,
-                            maxBrightness: nuMaxBrightness,
-                            matrixMarginX: nuMatrixMarginX,
-                            matrixMarginY: nuMatrixMarginY
+                            maxBrightness: nuMaxBrightness
                         }
                     );
 
                     rcNewZone.save();
-                    
+                    mqttManager.DeActivateMqttByZone();
+                    setTimeout(() => {
+                        /* Set graphic component, and initialize the componente */
+                        mqttManager.ActiveMqttByZone();
+                    }, 1000);
                     return res.status(200).json({
                         valor: "Yes"
                     });
-                                    
+
                 } else {
 
                     return res.status(401).json({
@@ -102,8 +99,6 @@ module.exports = class ZoneManager {
         sbUserId,
         sbZoneName,
         sbDescription,
-        sbTopicNode,
-        sbTopicAngular,
         nuRefreshWindow,
         nuAffectationArea,
         nuMinTemperature,
@@ -122,12 +117,10 @@ module.exports = class ZoneManager {
         nuMaxBrightness,
         nuMinVolatileGases,
         nuMaxVolatileGases,
-        nuMatrixMarginX,
-        nuMatrixMarginY,              
         res,
         next
     ) {
-        mdZone.find({ $or: [{topicNode: sbTopicNode}, {topicAngular: sbTopicAngular}] }, function (err, zones) {
+        mdZone.find({ $and: [{ userId: sbUserId }, { zoneName: sbZoneName }] }, function (err, zones) {
 
             if (err) {
 
@@ -144,8 +137,6 @@ module.exports = class ZoneManager {
                                 userId: sbUserId,
                                 zoneName: sbZoneName,
                                 description: sbDescription,
-                                topicNode: sbTopicNode,
-                                topicAngular: sbTopicAngular,
                                 refreshWindow: nuRefreshWindow,
                                 affectationArea: nuAffectationArea,
                                 minTemperature: nuMinTemperature,
@@ -163,34 +154,30 @@ module.exports = class ZoneManager {
                                 minVolatileGases: nuMinVolatileGases,
                                 maxVolatileGases: nuMaxVolatileGases,
                                 minBrightness: nuMinBrightness,
-                                maxBrightness: nuMaxBrightness,
-                                matrixMarginX: nuMatrixMarginX,
-                                matrixMarginY: nuMatrixMarginY
+                                maxBrightness: nuMaxBrightness
                             }
                         }
-    
+
                     mdZone.updateOne(myquery, rcNewZoneValues, function (error, ZoneUpdated) {
-    
+
                         if (error) {
-    
-                            return res.status(500).json({ error });
-    
+
+                            res.status(500).json({ error });
+
                         } else {
-    
-                            return res.status(200).json({
-                                ZoneUpdated
-                            });
+
+                            res.status(200).json({ZoneUpdated});
                         }
-    
+
                     });
-    
+
                 } else {
-    
+
                     res.status(401).json({
                         valor: "Ya existe una zona con este nombre",
                         zones: zones
                     });
-                }                
+                }
 
             }
 
@@ -205,8 +192,14 @@ module.exports = class ZoneManager {
                 return res.status(500).json({ err });
             } else {
 
+                mqttManager.DeActivateMqttByZone();
+                setTimeout(() => {
+                    /* Set graphic component, and initialize the componente */
+                    mqttManager.ActiveMqttByZone();
+                }, 1000);
+
                 return res.status(200).json({
-                    value: "Se ha borrado la zona: "
+                    value: "Se ha borrado la zona"
                 });
 
             }
@@ -220,7 +213,7 @@ module.exports = class ZoneManager {
 
             if (err) {
                 return res.status(500).json({ err });
-            } else {                              
+            } else {
                 return res.status(200).json({ zones });
             }
 
