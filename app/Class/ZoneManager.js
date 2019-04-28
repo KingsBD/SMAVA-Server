@@ -72,11 +72,11 @@ module.exports = class ZoneManager {
                     );
 
                     rcNewZone.save();
-                    mqttManager.DeActivateMqttByZone();
+                    
                     setTimeout(() => {
-                        /* Set graphic component, and initialize the componente */
                         mqttManager.ActiveMqttByZone();
                     }, 1000);
+
                     return res.status(200).json({
                         valor: "Yes"
                     });
@@ -165,7 +165,7 @@ module.exports = class ZoneManager {
                             res.status(500).json({ error });
 
                         } else {
-
+                            mqttManager.changeZoneInterval(sbZoneId,nuRefreshWindow,sbZoneName);
                             res.status(200).json({ZoneUpdated});
                         }
 
@@ -190,13 +190,9 @@ module.exports = class ZoneManager {
         mdZone.deleteOne({ _id: sbZoneId }, function (err, obj) {
             if (err) {
                 return res.status(500).json({ err });
-            } else {
-
-                mqttManager.DeActivateMqttByZone();
-                setTimeout(() => {
-                    /* Set graphic component, and initialize the componente */
-                    mqttManager.ActiveMqttByZone();
-                }, 1000);
+            } else {                
+                
+                mqttManager.delSubscriptionElements(sbZoneId);
 
                 return res.status(200).json({
                     value: "Se ha borrado la zona"

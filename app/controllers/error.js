@@ -1,12 +1,11 @@
 var express = require('express'),
   router = express.Router(),
+  jwt = require('jsonwebtoken'),
   errorManager = require('../Class/ErrorManager');
 
-module.exports = function (app) {
-  app.use('/', router);
-};
-
-
+  module.exports = function (app) {
+    app.use('/', router);
+  };
 
 router.post('/GetZoneErrorsByDate', function (req, res, next) {
 

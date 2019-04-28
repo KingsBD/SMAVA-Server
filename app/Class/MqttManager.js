@@ -4,7 +4,7 @@ var mongoose = require('mongoose'),
     mqtt = require('mqtt'),
     nodeManager = require('./NodeManager');
 
-var clients = [], angularClients = [];
+var arrConfiguration = [];
 module.exports = class MqttManager {
 
     constructor() { }
@@ -25,44 +25,136 @@ module.exports = class MqttManager {
     */
 
     static ActiveMqttByZone() {
-        
+        var blExistZoneId = true;
         mdZone.find({}, function (err, zones) {
 
             if (err) { console.log(err); }
             else {
 
                 for (let i in zones) {
-                    let sbReplace = "", sbZoneId = "";
-                    sbReplace = JSON.stringify(zones[i]._id);
-                    sbReplace = sbReplace.replace('"','');
-                    sbZoneId  = sbReplace.replace('"','');
-                    clients[i] = mqtt.connect('ws://smava:12345678@206.189.202.242:8083');
-                    //clients[i] = mqtt.connect('mqtt://smava:12345678@206.189.202.242:1883')
-                    //angularClients[i] = mqtt.connect('ws://smava:12345678@206.189.202.242:8083');
-                    
-                    clients[i].on('connect', function () {
-                        clients[i].subscribe(sbZoneId);
-                    });               
+                    blExistZoneId = true;
 
-                    clients[i].on('message', function (topic, message) {
-                        console.log('Entro: '+ topic);
-                        var JsonNode = JSON.parse(message.toString());
-                        JsonNode.data.timestamp = new Date();
-                        nodeManager.SaveNodeData(JsonNode);
-                        //angularClients[i].publish(sbZoneId), JSON.stringify(JsonNode));
+                    for (let j in arrConfiguration) {
 
-                    });
+                        if (zones[i]._id == arrConfiguration[j]._id) {
+                            blExistZoneId = false;
+                        }
+
+                    }
+
+                    if (blExistZoneId) {
+                        console.log('Se crean las subscripciones...');
+
+                        let sbReplace = "", sbZoneId = "";
+                        sbReplace = JSON.stringify(zones[i]._id);
+                        sbReplace = sbReplace.replace('"', '');
+                        sbZoneId = sbReplace.replace('"', '');
+
+                        var nuLength = arrConfiguration.push(
+                            {
+                                _id: sbZoneId,
+                                refreshWindow: zones[i].refreshWindow,
+                                servermqtt:mqtt.connect('ws://smava:12345678@206.189.202.242:8083'),
+                                //mqtt.connect('mqtt://smava:12345678@206.189.202.242:1883')
+                                //angularmqtt: mqtt.connect('ws://smava:12345678@206.189.202.242:8083'),
+                                notification: setInterval(
+                                    function () {
+                                        var dtDate = new Date(), dtInitDate = new Date(), dtFinalDate = new Date();
+                                        dtInitDate.setMinutes(dtDate.getMinutes() - zones[i].refreshWindow);
+                                        console.log('Se estan buscando datos cada:' + zones[i].refreshWindow
+                                            + ' en la zona: ' + zones[i].zoneName + ' hora: ' + dtFinalDate);
+                                        nodeManager.GetRangeNodesAvgNotify(zones[i]._id, dtInitDate, dtFinalDate);
+                                    },
+                                    zones[i].refreshWindow * 1000 * 60
+                                )
+                            }
+                        );
+
+                        nuLength = nuLength - 1;
+                        arrConfiguration[nuLength].servermqtt.on('connect', function () {
+                            arrConfiguration[nuLength].servermqtt.subscribe(sbZoneId);
+                        });
+
+                        arrConfiguration[nuLength].servermqtt.on('message', function (topic, message) {
+                            console.log('Entro: ' + topic);
+                            var JsonNode = JSON.parse(message.toString());
+                            JsonNode.data.timestamp = new Date();
+                            nodeManager.SaveNodeData(JsonNode);
+                            //arrConfiguration[nuLength].angularmqtt.publish(sbZoneId), JSON.stringify(JsonNode));
+                        });
+
+                        /*
+                        clients[i] = mqtt.connect('ws://smava:12345678@206.189.202.242:8083');
+                        //clients[i] = mqtt.connect('mqtt://smava:12345678@206.189.202.242:1883')
+                        //angularClients[i] = mqtt.connect('ws://smava:12345678@206.189.202.242:8083');
+                        
+                        arZones[i] = zones[i]._id + '';
+
+                        getDataNotification[i] = setInterval(
+                            function () {
+                                var dtDate = new Date(), dtInitDate = new Date(), dtFinalDate = new Date();
+                                dtInitDate.setMinutes(dtDate.getMinutes() - zones[i].refreshWindow);
+                                console.log('Se estan buscando datos cada:' + zones[i].refreshWindow
+                                    + ' en la zona: ' + zones[i].zoneName + ' hora: ' + dtFinalDate);
+                                nodeManager.GetRangeNodesAvgNotify(zones[i]._id, dtInitDate, dtFinalDate);
+                            },
+                            zones[i].refreshWindow * 1000 * 60
+                        );
+                        */
+                       /*
+                        clients[i].on('connect', function () {
+                            clients[i].subscribe(sbZoneId);
+                        });
+
+                        clients[i].on('message', function (topic, message) {
+                            console.log('Entro: ' + topic);
+                            var JsonNode = JSON.parse(message.toString());
+                            JsonNode.data.timestamp = new Date();
+                            nodeManager.SaveNodeData(JsonNode);
+                            //angularClients[i].publish(sbZoneId), JSON.stringify(JsonNode));
+                        });*/
+                    }
 
                 }
             }
         });
     }
 
-    static DeActivateMqttByZone() {    
-        for (let i in clients) {
-            clients[i].end();
-            //angularClients[i].end();
+    static delSubscriptionElements(sbZoneId) {
+        for (let i in arrConfiguration) {
+
+            if (sbZoneId == arrConfiguration[i]._id) {
+                clearInterval(arrConfiguration[i].notification);
+                arrConfiguration[i].servermqtt.end();
+                //arrConfiguration[i].angularmqtt.end(); 
+                console.log(arrConfiguration.splice(i, 1));
+                return;
+            }
         }
+
+    }
+
+    static changeZoneInterval(sbZoneId, nuNewinterval, sbZoneName) {
+
+        for (let i in arrConfiguration) {            
+            
+            if ((sbZoneId == arrConfiguration[i]._id) && (nuNewinterval != arrConfiguration[i].refreshWindow)) {
+                clearInterval(arrConfiguration[i].notification);
+                arrConfiguration[i].notification = null;
+                arrConfiguration[i].refreshWindow = nuNewinterval;                
+                arrConfiguration[i].notification = setInterval(
+                    function () {
+                        var dtDate = new Date(), dtInitDate = new Date(), dtFinalDate = new Date();
+                        dtInitDate.setMinutes(dtDate.getMinutes() - nuNewinterval);
+                        console.log('Se estan buscando datos cada:' + nuNewinterval
+                        + ' en la zona: ' + sbZoneName + ' hora: ' + dtFinalDate);
+                        nodeManager.GetRangeNodesAvgNotify(sbZoneId, dtInitDate, dtFinalDate);
+                    },
+                    nuNewinterval * 1000 * 60
+                );
+            }
+        }
+
     }
 
 }  

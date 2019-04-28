@@ -42,9 +42,9 @@ module.exports = class NotificationManager {
                 return;
             }
 
-            user.findOne({ _id: searchZone.userId }, function (err, searchUser) {
+            user.findOne({ _id: searchZone.userId }, function (errrZone, searchUser) {
 
-                if (err) {
+                if (errrZone) {
                     console.log("Not found user");
                     return;
                 }
@@ -64,16 +64,20 @@ module.exports = class NotificationManager {
                 arLimitRange.forEach(variableStatus => {
 
                     if (variableStatus.value <= variableStatus.min || variableStatus.value >= variableStatus.max) {
-                        var message = {
+                        let token = '-1';
+                        if (searchUser.token != '') {
+                            token = searchUser.token;
+                        }
+                        let message = {
                             notification: {
-                                title: 'Estado de la' + variableStatus.variable,
-                                body: 'La ' + veariablStatus.variable + ' esta por debajo o por encima del promedio establecido.'
+                                title: 'El estado de la: ' + variableStatus.variable + ', de la zona: '+ searchZone.zoneName,
+                                body: 'Esta por debajo o por encima de los valores establecidos.'
                             },
-                            token: searchUser.token
+                            token: token
                         };
                         
                         // Save the errors zone 
-                        arrZoneErrors.push({variable: veariablStatus.variable,value: variableStatus.value });
+                        arrZoneErrors.push({variable: variableStatus.variable,value: variableStatus.value });
                         errorManager.SaveZoneErrorData(sbZoneId,dtToday,arrZoneErrors);
 
                         admin.messaging().send(message).then((response) => {
