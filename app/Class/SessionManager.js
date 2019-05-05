@@ -11,7 +11,7 @@ module.exports = class SessionManager {
 
     constructor() { }
 
-    static loging(sbUserName, SbPassword, res, next) {
+    static loging(sbUserName = '', SbPassword = '', res, next) {
 
         User.findOne({ 'username': sbUserName, 'password': SbPassword }, function (err, data) {
             if (err) {                

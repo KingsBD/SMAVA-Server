@@ -77,8 +77,7 @@ module.exports = class NotificationManager {
                         };
                         
                         // Save the errors zone 
-                        arrZoneErrors.push({variable: variableStatus.variable,value: variableStatus.value });
-                        errorManager.SaveZoneErrorData(sbZoneId,dtToday,arrZoneErrors);
+                        arrZoneErrors.push({variable: variableStatus.variable,value: variableStatus.value });                        
 
                         admin.messaging().send(message).then((response) => {
                             console.log('Successfully sent message:', response);
@@ -89,6 +88,9 @@ module.exports = class NotificationManager {
                     }
 
                 });
+                if (arrZoneErrors.length >0) {
+                    errorManager.SaveZoneErrorData(sbZoneId,dtToday,arrZoneErrors);    
+                }                
 
             });
 

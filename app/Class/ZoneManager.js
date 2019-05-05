@@ -12,27 +12,27 @@ module.exports = class ZoneManager {
     constructor() { }
 
     static CreateZone(
-        sbUserId,
-        sbZoneName,
-        sbDescription,
-        nuRefreshWindow,
-        nuAffectationArea,
-        nuMinTemperature,
-        nuMaxTemperature,
-        nuMinSoilTemperature,
-        nuMaxSoilTemperature,
-        nuMinHumidity,
-        nuMaxHumidity,
-        nuMinSoilHumidity,
-        nuMaxSoilHumidity,
-        nuMinPressure,
-        nuMaxPressure,
-        nuMinUV,
-        nuMaxUV,
-        nuMinBrightness,
-        nuMaxBrightness,
-        nuMinVolatileGases,
-        nuMaxVolatileGases,
+        sbUserId = '',
+        sbZoneName = '',
+        sbDescription = '',
+        nuRefreshWindow = 0,
+        nuAffectationArea = 0,
+        nuMinTemperature = 0,
+        nuMaxTemperature = 0,
+        nuMinSoilTemperature = 0,
+        nuMaxSoilTemperature = 0,
+        nuMinHumidity = 0,
+        nuMaxHumidity = 0,
+        nuMinSoilHumidity = 0,
+        nuMaxSoilHumidity = 0,
+        nuMinPressure = 0,
+        nuMaxPressure = 0,
+        nuMinUV = 0,
+        nuMaxUV = 0,
+        nuMinBrightness = 0,
+        nuMaxBrightness = 0,
+        nuMinVolatileGases = 0,
+        nuMaxVolatileGases = 0,
         res,
         next
     ) {
@@ -95,28 +95,28 @@ module.exports = class ZoneManager {
     }
 
     static UpdateZone(
-        sbZoneId,
-        sbUserId,
-        sbZoneName,
-        sbDescription,
-        nuRefreshWindow,
-        nuAffectationArea,
-        nuMinTemperature,
-        nuMaxTemperature,
-        nuMinSoilTemperature,
-        nuMaxSoilTemperature,
-        nuMinHumidity,
-        nuMaxHumidity,
-        nuMinSoilHumidity,
-        nuMaxSoilHumidity,
-        nuMinPressure,
-        nuMaxPressure,
-        nuMinUV,
-        nuMaxUV,
-        nuMinBrightness,
-        nuMaxBrightness,
-        nuMinVolatileGases,
-        nuMaxVolatileGases,
+        sbZoneId = '',
+        sbUserId = '',
+        sbZoneName = '',
+        sbDescription = '',
+        nuRefreshWindow = 0,
+        nuAffectationArea = 0,
+        nuMinTemperature = 0,
+        nuMaxTemperature = 0,
+        nuMinSoilTemperature = 0,
+        nuMaxSoilTemperature = 0,
+        nuMinHumidity = 0,
+        nuMaxHumidity = 0,
+        nuMinSoilHumidity = 0,
+        nuMaxSoilHumidity = 0,
+        nuMinPressure = 0,
+        nuMaxPressure = 0,
+        nuMinUV = 0,
+        nuMaxUV = 0,
+        nuMinBrightness = 0,
+        nuMaxBrightness = 0,
+        nuMinVolatileGases = 0,
+        nuMaxVolatileGases = 0,
         res,
         next
     ) {
@@ -185,7 +185,7 @@ module.exports = class ZoneManager {
 
     }
 
-    static DeleteZone(sbZoneId, res) {
+    static DeleteZone(sbZoneId = '', res) {
 
         mdZone.deleteOne({ _id: sbZoneId }, function (err, obj) {
             if (err) {
@@ -217,7 +217,7 @@ module.exports = class ZoneManager {
 
     }
 
-    static SearchZoneByName(sbUserId, sbZoneName, res, next) {
+    static SearchZoneByName(sbUserId = '', sbZoneName = '', res, next) {
 
         mdZone.find({ userId: sbUserId, zonename: '/.*' + sbZoneName },
             function (err, zones) {
@@ -237,7 +237,7 @@ module.exports = class ZoneManager {
 
     }
 
-    static SearchZoneById(sbUserId, sbZoneId, res, next) {
+    static SearchZoneById(sbUserId = '', sbZoneId = '', res, next) {
 
         mdZone.find({ userId: sbUserId, _id: sbZoneId }, function (err, zones) {
 

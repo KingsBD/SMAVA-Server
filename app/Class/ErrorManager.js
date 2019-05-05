@@ -17,7 +17,7 @@ module.exports = class ErrorManager {
         newZoneError.save();
     }
 
-    static GetErrorsByDate(sbZoneId, dtInitialDate, dtFinalDate, res, next) {
+    static GetErrorsByDate(sbZoneId = '', dtInitialDate = new Date(), dtFinalDate = new Date(), res, next) {
 
         zoneError.aggregate(
             [
@@ -26,6 +26,9 @@ module.exports = class ErrorManager {
                         date: { $lt: dtFinalDate, $gte: dtInitialDate },
                         zoneId: sbZoneId
                     }
+                },
+                {
+                    $sort: { date: -1 }
                 }
             ],
             function (err, ZoneErrors) {

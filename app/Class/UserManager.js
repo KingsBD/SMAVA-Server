@@ -9,11 +9,11 @@ module.exports = class UserManager {
 
 
     static CreateUser(
-        sbUsername,
-        sbPassword,
-        sbName,
-        sbLastname,
-        sbEmail,
+        sbUsername = '',
+        sbPassword = '',
+        sbName = '',
+        sbLastname = '',
+        sbEmail = '',
         res
     ) {
 
@@ -100,7 +100,7 @@ module.exports = class UserManager {
         });
     }
 
-    static GetUserById(SbUserId, res, next) {
+    static GetUserById(SbUserId = '', res, next) {
 
         User.find({ _id: SbUserId }, function (err, users) {
 
@@ -132,7 +132,7 @@ module.exports = class UserManager {
             } else {
                 
                 return res.status(200).json({
-                    value: "Se ha borrado el usuario: " + sbUsername + obj.result.n
+                    value: "Se ha borrado el usuario: " + sbUsername
                 });
             }
 
@@ -140,12 +140,12 @@ module.exports = class UserManager {
     }
 
     static UpdateUser(
-        SbUserId,
-        sbUsername,
-        sbPassword,
-        sbName,
-        sbLastname,
-        sbEmail,
+        SbUserId = '',
+        sbUsername = '',
+        sbPassword = '',
+        sbName = '',
+        sbLastname = '',
+        sbEmail = '',
         res
     ) {
 

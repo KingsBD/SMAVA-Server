@@ -9,31 +9,27 @@ var mongoose = require('mongoose'),
 
 module.exports = class NodeManager {
 
-  constructor() {}
+  constructor() { }
 
   /**
    * SaveNodeData
    * Recive a Json to save the node in the DB.
    * @param {Json} JsonNode 
    */
-  static SaveNodeData(JsonNode) {
+  static SaveNodeData(JsonNode, sbZoneId) {
     let newNode = new nodo(
       {
-        mac: JsonNode.config.mac,
-        lat: JsonNode.data.gps.latitude,
-        lng: JsonNode.data.gps.longitude,
-        temperature: JsonNode.data.temperature,
-        soilTemperature: JsonNode.data.floorTemperature,
-        humidity: JsonNode.data.humidity,
-        brightness: JsonNode.data.brightness,
-        soilHumidity: JsonNode.data.soilHumidity,
-        altitude: JsonNode.data.altitude,
-        pressure: JsonNode.data.pressure,
-        volatileGases: JsonNode.data.volatileGases,
-        uv: JsonNode.data.uv,
-        Battery: JsonNode.data.Battery,
-        zoneId: JsonNode.zoneId,
-        date: JsonNode.data.timestamp
+        lat: JsonNode.la,
+        lng: JsonNode.lo,
+        temperature: JsonNode.t,
+        soilTemperature: JsonNode.sT,
+        humidity: JsonNode.h,
+        brightness: JsonNode.b,
+        soilHumidity: JsonNode.sH,
+        volatileGases: JsonNode.v,
+        uv: JsonNode.u,
+        zoneId: sbZoneId,
+        date: new Date(JsonNode.ti * 1000)
       }
     );
     newNode.save();
@@ -47,7 +43,8 @@ module.exports = class NodeManager {
         {
           $match:
           {
-            date: { $lte: dtFinalDate, $gte: dtInitialDate }
+            date: { $lte: dtFinalDate, $gte: dtInitialDate },
+            zoneId: sbZoneId
           }
         },
         {
@@ -102,16 +99,16 @@ module.exports = class NodeManager {
    * @param {Date} dtInitialDate Fecha inicial
    * @param {Date} dtFinalDate Fecha final
    */
-  static GetRangeNodes(sbZoneId, dtInitialDate, dtFinalDate, res) {
+  static GetRangeNodes(sbZoneId = '', dtInitialDate = new Date(), dtFinalDate = new Date(), res) {
 
     nodo.find({ zoneId: sbZoneId, date: { $lte: dtFinalDate, $gt: dtInitialDate } }, function (err, nodes) {
       if (err) {
 
-        return res.status(500).json({err});
+        return res.status(500).json({ err });
 
       } else {
 
-        return res.status(200).json({nodes});
+        return res.status(200).json({ nodes });
       }
 
     });
@@ -162,10 +159,12 @@ module.exports = class NodeManager {
     )
   }
 
-  static MonthDataNodes(sbZoneId, res, next) {
+  static MonthDataNodes(sbZoneId = '', res, next) {
     var date = new Date();
     var FirstDay = new Date(date.getFullYear(), date.getMonth(), 1);
+    FirstDay.setHours(0, 0, 0, 0);
     var LastDay = new Date(date.getFullYear(), date.getMonth(), 31);
+    LastDay.setHours(23, 59, 59);
 
     nodo.aggregate(
       [
@@ -221,19 +220,23 @@ module.exports = class NodeManager {
     )
   }
 
-  static LastWeekDataNodes(sbZoneId, res, next) {
+  static LastWeekDataNodes(sbZoneId = '', res, next) {
     var FirstDay = new Date();
     FirstDay.setDate(FirstDay.getDate() - 6);
+    FirstDay.setHours(0, 0, 0, 0);
     var LastDay = new Date();
     LastDay.setDate(LastDay.getDate() - 1);
+    LastDay.setHours(23, 59, 59);
+    console.log('LastDay: ' + LastDay);
+    console.log('FirstDay: ' + FirstDay);
 
     nodo.aggregate(
       [
         {
           $match:
           {
-            date: { $gte: FirstDay, $lte: LastDay },
-            zoneId: sbZoneId
+            zoneId: sbZoneId,
+            date: { $gte: FirstDay, $lte: LastDay }
           }
         },
         {
@@ -266,6 +269,9 @@ module.exports = class NodeManager {
             nuMinVolatileGases: { $min: '$volatileGases' },
             nuMaxVolatileGases: { $max: '$volatileGases' }
           }
+        },
+        {
+          $sort: { _id: 1 }
         }
       ],
       function (err, jsWeekData) {
@@ -283,7 +289,7 @@ module.exports = class NodeManager {
     )
   }
 
-  static GetMinMaxValues(sbZoneId, dtInitialDate, dtFinalDate, res, next) {
+  static GetMinMaxValues(sbZoneId = '', dtInitialDate = new Date(), dtFinalDate = new Date(), res, next) {
 
     nodo.aggregate(
       [
@@ -333,6 +339,6 @@ module.exports = class NodeManager {
 
     );
 
-  }  
+  }
 
 }

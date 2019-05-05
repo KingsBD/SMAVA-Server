@@ -63,7 +63,7 @@ module.exports = class MqttManager {
                                         dtInitDate.setMinutes(dtDate.getMinutes() - zones[i].refreshWindow);
                                         console.log('Se estan buscando datos cada:' + zones[i].refreshWindow
                                             + ' en la zona: ' + zones[i].zoneName + ' hora: ' + dtFinalDate);
-                                        nodeManager.GetRangeNodesAvgNotify(zones[i]._id, dtInitDate, dtFinalDate);
+                                        nodeManager.GetRangeNodesAvgNotify(sbZoneId, dtInitDate, dtFinalDate);
                                     },
                                     zones[i].refreshWindow * 1000 * 60
                                 )
@@ -78,41 +78,9 @@ module.exports = class MqttManager {
                         arrConfiguration[nuLength].servermqtt.on('message', function (topic, message) {
                             console.log('Entro: ' + topic);
                             var JsonNode = JSON.parse(message.toString());
-                            JsonNode.data.timestamp = new Date();
-                            nodeManager.SaveNodeData(JsonNode);
+                            nodeManager.SaveNodeData(JsonNode, topic);
                             //arrConfiguration[nuLength].angularmqtt.publish(sbZoneId), JSON.stringify(JsonNode));
                         });
-
-                        /*
-                        clients[i] = mqtt.connect('ws://smava:12345678@206.189.202.242:8083');
-                        //clients[i] = mqtt.connect('mqtt://smava:12345678@206.189.202.242:1883')
-                        //angularClients[i] = mqtt.connect('ws://smava:12345678@206.189.202.242:8083');
-                        
-                        arZones[i] = zones[i]._id + '';
-
-                        getDataNotification[i] = setInterval(
-                            function () {
-                                var dtDate = new Date(), dtInitDate = new Date(), dtFinalDate = new Date();
-                                dtInitDate.setMinutes(dtDate.getMinutes() - zones[i].refreshWindow);
-                                console.log('Se estan buscando datos cada:' + zones[i].refreshWindow
-                                    + ' en la zona: ' + zones[i].zoneName + ' hora: ' + dtFinalDate);
-                                nodeManager.GetRangeNodesAvgNotify(zones[i]._id, dtInitDate, dtFinalDate);
-                            },
-                            zones[i].refreshWindow * 1000 * 60
-                        );
-                        */
-                       /*
-                        clients[i].on('connect', function () {
-                            clients[i].subscribe(sbZoneId);
-                        });
-
-                        clients[i].on('message', function (topic, message) {
-                            console.log('Entro: ' + topic);
-                            var JsonNode = JSON.parse(message.toString());
-                            JsonNode.data.timestamp = new Date();
-                            nodeManager.SaveNodeData(JsonNode);
-                            //angularClients[i].publish(sbZoneId), JSON.stringify(JsonNode));
-                        });*/
                     }
 
                 }
