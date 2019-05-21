@@ -217,6 +217,22 @@ module.exports = class ZoneManager {
 
     }
 
+    static GetinitDataZonesByUserId(sbUserId, res, next) {
+
+        mdZone.find({ userId: sbUserId }, { _id: 1, zoneName: 1, refreshWindow: 1 }, function (err, zones) {
+
+            if (err) {
+                return res.status(500).json({ err });
+            } else {
+                return res.status(200).json(
+                    { zones }
+                );
+            }
+
+        });
+
+    }    
+
     static SearchZoneByName(sbUserId = '', sbZoneName = '', res, next) {
 
         mdZone.find({ userId: sbUserId, zonename: '/.*' + sbZoneName },
