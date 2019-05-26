@@ -2,11 +2,43 @@
 var mongoose = require('mongoose'),
     User = mongoose.model('User');
 const csbUserRole = 'ROLE_USER';
+const csbAdminRole = 'ROLE_ADMIN';
 
 module.exports = class UserManager {
 
     constructor() { }
 
+    static CreateAdmin() {
+
+        User.find({ role: csbAdminRole }).count(function (err, users) {
+            if (err) {
+                console.log(err);               
+            } else {
+
+                if (parseInt(users) == 0 ) {
+                    console.log('Creando administrador...');  
+                    var rcNewUser = new User(
+                        {
+                            username: 'admin',
+                            password: '1234',
+                            name: 'Admin',
+                            lastname: 'SMAVA',
+                            email: 'SMAVA@example.com',
+                            role: csbAdminRole,
+                            token: ""
+                        }
+                    );
+
+                    rcNewUser.save();
+
+                    console.log('Administrador creado...');  
+
+                } else {
+                    console.log('Administrador establecido...');                                    
+                }
+            }
+        });
+    }   
 
     static CreateUser(
         sbUsername = '',
