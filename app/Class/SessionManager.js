@@ -14,7 +14,7 @@ module.exports = class SessionManager {
 
     static loging(sbUserName = '', SbPassword = '', res, next) {
 
-        User.findOne({ 'username': sbUserName, 'password': SbPassword }, function (err, data) {
+        User.findOne({ username: sbUserName, password: SbPassword }, function (err, data) {
             if (err) {
 
                 return res.status(500).json({ err });
@@ -37,7 +37,7 @@ module.exports = class SessionManager {
 
     static loginAndGetZones(sbUserName = '', SbPassword = '', res, next) {
 
-        User.findOne({ 'username': sbUserName, 'password': SbPassword }, function (err, data) {
+        User.findOne({ username: sbUserName, password: SbPassword }, function (err, data) {
             if (err) {
 
                 return res.status(500).json({ err });
